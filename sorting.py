@@ -1,16 +1,14 @@
 # Various sorting techniques
 
-# Insertion sort, Merge sort, Heap sort,
-# Quick sort, Counting sort, Radix sort, Bucket sort
+# Insertion sort, Merge sort, Heap sort, Quick sort, Counting sort, Radix sort, Bucket sort
 
 test = [1,9,8,7,6,5,95,93,29,17,4,199,43,394,59,3,30,34,704,601,26,69,89,99,999,9868,95,59,939,14,12,604,5023,13,6,-3,-99]
 
 # Insertion sort
 
-''' 
-This takes a list of numbers and sorts them in ascending order.
+'''
 
-Why study this О(n^2) algo? as wiki says it has the following advantages,
+Why study this О(n^2) algorithm? as wiki says it has the following advantages,
 
 * Its In-Place - requires O(1) extra memory
 
@@ -72,12 +70,18 @@ def insertionSort(a):
 		print(a)
 
 # Merge sort
+
 '''
-This takes a list of numbers, starting and ending index,
-and sorts them in ascending order.
+This algorithm has a worst case running time of O(n*ln(n)).
+But for small lists insertion sort beats merge sort (The constant term hidden in the O notation makes a difference) 
+So for optimal performance we can use merge sort upto some small list size
+and then use insertion sort.
+
+This requires a auxiliary space of O(n)
 
 '''
 
+# This takes a list of numbers - 'a', starting and ending index - p & q, and sorts them in ascending order.
 def mergeSort(a,p,r):
 	# a singleton list is trivially sorted
 	if(p>=r):
@@ -126,10 +130,72 @@ def merge(a,i,j,k):
 	#print("\nBoth sublists have been merged!")
 	#print(a)
 
+# Heap sort - Max heap
+
+'''
+The (binary) heap data structure is an array object that we can view as a
+nearly complete binary tree.
+For the heapsort algorithm, we use max-heaps. Min-heaps commonly implement
+priority queues. - WHYYY???
+Here the max-heap property refers to a[i//2] >= a[i]. which mens parents are always larger
+than its children.
+
+'''
+
+# This is used to maintain the max-heap property, assuming the child subtree's of a[i] are satisfying max-heap
+# the value at a[i] is floated down such that the subtree rooted at index i obeys the max-heap property.
+def maxHeapify(a,i):
+
+	print("\n Working on "+str(a[i])+" and its children")
+	print(a)
+
+	# The two subtrees of a[i]
+	leftIndex = 2*i
+	rightIndex = 2*i + 1
+	largestIndex = i # just for now, so that later we can check if it's children were larger.
+	leftValue = None
+	rightValue = None
+	rootValue = a[i]
+	try:
+		leftValue = a[leftIndex]
+	except IndexError:
+		print("leftIndex doesnt exist")
+	try:
+		rightValue = a[rightIndex]
+	except IndexError:
+		print("leftIndex doesnt exist")
+
+	if(leftValue and leftValue>rightValue and leftValue>rootValue):
+		largestIndex = leftIndex
+		print("\nleft child of "+str(a[i])+" i.e. "+str(a[leftIndex])+" is the largest")
+	if(rightValue and rightValue>leftValue and rightValue>rootValue):
+		largestIndex = rightIndex
+		print("\nright child of "+str(a[i])+" i.e. "+str(a[rightIndex])+" is the largest")
+
+	if(largestIndex == i):
+		print("No further change required - rootValue is the largest")
+		return
+	
+	# among its immediate children correct a[i]'s position
+	temp = a[i]
+	a[i] = a[largestIndex]
+	a[largestIndex] = temp
+
+	print("so after switching them we get =>")
+	print(a)
+	# move on to ensure that in a[largestIndex]'s children a[i] finds its correct position
+	maxHeapify(a,largestIndex)
+
+# This runs in linear time to produce a maxheap from an unordered input array.
+def buildMaxHeap(a):
+	# fix all the nodes bottom-up starting from the First parent - parent of the leaf node
+	for i in range(len(a)//2,0,-1):
+		maxHeapify(a,i)
+
 
 # TESTS
 
-print("START Testing")
+print("START Testing\n")
 
 '''
 print("\nPerforming Insertion Sort on 'test' ")
@@ -137,10 +203,30 @@ print(test)
 insertionSort(test)
 '''
 
+'''
 print("\nPerforming Merge Sort on 'test' ")
 print(test)
 merge([3,4,1,2,3,4,5,-3,-2,-1,0],2,7,10)
 mergeSort(test, 0, (len(test)-1))
 print(test)
+'''
 
+'''
+print("Testing maxHeapify starting at 'index = 2'")
+test1 = ["dummy",16,4,10,14,7,9,3,2,8,1]
+print(test1)
+maxHeapify(test1,2) # We use index's starting from 1 as 2*0 = 0 (the finding of children won't work)
+print("\n\nThis the final result is =>")
+print(test1)
+if(['dummy', 16, 14, 10, 8, 7, 9, 3, 2, 4, 1] == test1):
+	print("\n\nTest is likely to have been passed")
+else:
+	print("\n\nTest has failed!!")
+'''
 
+print("Testing buildMaxHeap")
+test2=["dummy",4, 1, 3, 2, 16, 9, 10, 14, 8, 7]
+print(test2)
+buildMaxHeap(test2)
+print("\n\nThis the final result is =>")
+print(test2)
