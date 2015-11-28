@@ -1,4 +1,5 @@
 # Various sorting techniques
+import sys
 
 # Insertion sort, Merge sort, Heap sort, Quick sort, Counting sort, Radix sort, Bucket sort
 
@@ -146,34 +147,34 @@ than its children.
 # the value at a[i] is floated down such that the subtree rooted at index i obeys the max-heap property.
 def maxHeapify(a,i):
 
-	print("\n Working on "+str(a[i])+" and its children")
-	print(a)
+	#print("\n Working on "+str(a[i])+" and its children")
+	#print(a)
 
 	# The two subtrees of a[i]
 	leftIndex = 2*i
 	rightIndex = 2*i + 1
 	largestIndex = i # just for now, so that later we can check if it's children were larger.
-	leftValue = None
-	rightValue = None
 	rootValue = a[i]
 	try:
 		leftValue = a[leftIndex]
 	except IndexError:
-		print("leftIndex doesnt exist")
+		#print("leftIndex doesnt exist")
+		leftValue = -sys.maxsize - 1
 	try:
 		rightValue = a[rightIndex]
 	except IndexError:
-		print("leftIndex doesnt exist")
+		#print("rightIndex doesnt exist")
+		rightValue = -sys.maxsize - 1
 
 	if(leftValue and leftValue>rightValue and leftValue>rootValue):
 		largestIndex = leftIndex
-		print("\nleft child of "+str(a[i])+" i.e. "+str(a[leftIndex])+" is the largest")
+		#print("\nleft child of "+str(a[i])+" i.e. "+str(a[leftIndex])+" is the largest")
 	if(rightValue and rightValue>leftValue and rightValue>rootValue):
 		largestIndex = rightIndex
-		print("\nright child of "+str(a[i])+" i.e. "+str(a[rightIndex])+" is the largest")
+		#print("\nright child of "+str(a[i])+" i.e. "+str(a[rightIndex])+" is the largest")
 
 	if(largestIndex == i):
-		print("No further change required - rootValue is the largest")
+		#print("No further change required - rootValue is the largest")
 		return
 	
 	# among its immediate children correct a[i]'s position
@@ -181,8 +182,9 @@ def maxHeapify(a,i):
 	a[i] = a[largestIndex]
 	a[largestIndex] = temp
 
-	print("so after switching them we get =>")
-	print(a)
+	#print("so after switching them we get =>")
+	#print(a)
+
 	# move on to ensure that in a[largestIndex]'s children a[i] finds its correct position
 	maxHeapify(a,largestIndex)
 
@@ -191,7 +193,23 @@ def buildMaxHeap(a):
 	# fix all the nodes bottom-up starting from the First parent - parent of the leaf node
 	for i in range(len(a)//2,0,-1):
 		maxHeapify(a,i)
+		#print("\n maxHeapify on "+str(i)+" is done => value at that index has floated down to its correct position\n")
 
+def heapSort(a):
+	# as I am using list's in this implementation I am using more storage.
+	result = []
+	buildMaxHeap(a)
+	for i in range(len(a)-1,1,-1):
+		temp = a[len(a)-1]
+		a[len(a)-1] = a[1]
+		a[1] = temp
+		# a[1] used to hold the largest number, now its in a[len(a)-1]
+		result.append(a.pop())
+		# After removing the largest number - popping it into result, remake the heap with remaining numbers.
+		maxHeapify(a,1)
+
+	result.append(a.pop())
+	return result
 
 # TESTS
 
@@ -212,6 +230,7 @@ print(test)
 '''
 
 '''
+# CLRS 3rd edition - Page 155 Fig 6.2
 print("Testing maxHeapify starting at 'index = 2'")
 test1 = ["dummy",16,4,10,14,7,9,3,2,8,1]
 print(test1)
@@ -223,10 +242,22 @@ if(['dummy', 16, 14, 10, 8, 7, 9, 3, 2, 4, 1] == test1):
 else:
 	print("\n\nTest has failed!!")
 '''
-
+'''
+# CLRS 3rd edition - Page 158 Fig 6.3
 print("Testing buildMaxHeap")
 test2=["dummy",4, 1, 3, 2, 16, 9, 10, 14, 8, 7]
 print(test2)
 buildMaxHeap(test2)
 print("\n\nThis the final result is =>")
 print(test2)
+if(['dummy', 16, 14, 10, 8, 7, 9, 3, 2, 4, 1] == test2):
+	print("\n\nTest is likely to have been passed")
+else:
+	print("\n\nTest has failed!!")
+'''
+'''
+test = ["dummy",1,9,8,7,6,5,95,93,29,17,4,199,43,394,59,3,30,34,704,601,26,69,89,99,999,9868,95,59,939,14,12,604,5023,13,6,-3,-99]
+print("\nPerforming HeapSort on 'test' ")
+print(test)
+print(heapSort(test))
+'''
